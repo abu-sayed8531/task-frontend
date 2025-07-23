@@ -1,30 +1,10 @@
 <script setup>
-// import { ref } from "vue";
-// import { useTaskStore } from "../../stores/taskStore";
 
-// const taskStore = useTaskStore();
-
-// const title = ref("");
-// const description = ref("");
-
-// const createTask = async () => {
-//   if (!title.value.trim()) {
-//     alert("Please Enter Task Title");
-//     return;
-//   }
-
-//   await taskStore.createTask({
-//     title: title.value,
-//     description: description.value,
-//     status: "new",
-//   });
-
-//   //   Clear Form
-//   title.value = "";
-//   description.value = "";
-// };
 import {ref} from 'vue';
 import { useTaskStore } from '../../stores/taskStore';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const taskStore = useTaskStore();
 const title = ref('');
   const description = ref('');
@@ -40,6 +20,7 @@ async function createTask(){
   });
   title.value = '',
   description.value = '';
+  router.push({name:'summary'});
 }
 </script>
 

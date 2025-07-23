@@ -3,10 +3,7 @@ import { RouterView } from "vue-router";
 import { useAuthStore } from "../stores/authStore";
 
 const authStore = useAuthStore()
-// function logout(){
-//   console.log('hello');
-//   authStore.logout();
-// }
+
 </script>
 
 <template>
@@ -37,13 +34,13 @@ const authStore = useAuthStore()
                 class="icon-nav-img mb-2"
                 alt=""
               />
-              <h6>User Name</h6>
+              <h6>{{ authStore.user.name }}</h6>
               <hr class="p-0" />
             </div>
-            <a href="/profile" class="side-bar-item">
+            <RouterLink :to = "{name: 'profile'}" class="side-bar-item">
               <i class="bi bi-person side-bar-item-icon"></i>
               <span class="side-bar-item-caption">Profile</span>
-            </a>
+            </RouterLink>
             <span
             @click = "authStore.logout"
               class="side-bar-item"
@@ -60,7 +57,7 @@ const authStore = useAuthStore()
 
   <!-- Sidebar -->
   <div class="side-nav-open">
-    <RouterLink :to="{name: 'dashboard'}" class="side-bar-item mt-2">
+    <RouterLink :to="{name: 'summary'}" class="side-bar-item mt-2">
       <i class="bi bi-speedometer2 side-bar-item-icon"></i>
       <span>Dashboard</span>
     </RouterLink>

@@ -63,9 +63,7 @@ Swal.fire({
   if (result.isConfirmed) {
   const deleted =  taskStore.deleteTask(id);
   if(deleted){
-    setTimeout(()=>{
-         router.push('/dashboard');
-    },1000);
+    
     Swal.fire({
       title: "Deleted!",
       text: "Your task has been deleted.",

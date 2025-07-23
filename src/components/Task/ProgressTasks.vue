@@ -2,12 +2,49 @@
 import { onBeforeMount } from "vue";
 import { useTaskStore } from "../../stores/taskStore";
 import ShimmerLoader from "../ShimmerLoader.vue";
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
+const router = useRouter();
 const taskStore = useTaskStore();
 
 onBeforeMount(async () => {
   await taskStore.filterByStatus({status:'in_progress'});
 });
+// go to edit page 
+function goToEdit(id){
+ router.push({name : 'edit-task', params:{id:id}});
+}
+// delete task
+
+
+async function deleteTask(id){
+Swal.fire({
+  title: "Are you sure?",
+  text: "You won't be able to revert this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, delete it!",  
+  
+}).then((result) => {
+  if (result.isConfirmed) {
+  const deleted =  taskStore.deleteTask(id);
+  if(deleted){
+   
+    Swal.fire({
+      title: "Deleted!",
+      text: "Your task has been deleted.",
+      icon: "success",
+      timer : 1000,
+    })
+  }
+  }
+});
+  
+}
+
 </script>
 
 <template>
@@ -52,7 +89,7 @@ onBeforeMount(async () => {
                   ></path>
                 </svg>
                 {{ new Date(task.created_at).toLocaleDateString() }}
-                <a class="icon-nav text-primary mx-1"
+                <a @click = "goToEdit(task.id)" class="icon-nav text-primary mx-1"
                   ><svg
                     stroke="currentColor"
                     fill="currentColor"
@@ -65,7 +102,7 @@ onBeforeMount(async () => {
                     <path
                       d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"
                     ></path></svg></a
-                ><a class="icon-nav text-danger mx-1"
+                ><a @click = "deleteTask(task.id)" class="icon-nav text-danger mx-1"
                   ><svg
                     stroke="currentColor"
                     fill="currentColor"

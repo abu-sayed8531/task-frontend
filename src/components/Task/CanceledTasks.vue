@@ -2,12 +2,47 @@
 import { onBeforeMount } from "vue";
 import ShimmerLoader from "../ShimmerLoader.vue";
 import { useTaskStore } from "../../stores/taskStore";
+import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
+
+const router = useRouter();
 
 const taskStore = useTaskStore();
 
 onBeforeMount(async () => {
   await taskStore.filterByStatus({status: 'cancel'});
 });
+function goToEdit(id){
+ router.push({name : 'edit-task', params:{id:id}});
+}
+
+// delete task
+async function deleteTask(id){
+Swal.fire({
+  title: "Are you sure?",
+  text: "You won't be able to revert this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, delete it!",  
+  
+}).then((result) => {
+  if (result.isConfirmed) {
+  const deleted =  taskStore.deleteTask(id);
+  if(deleted){
+   
+    Swal.fire({
+      title: "Deleted!",
+      text: "Your task has been deleted.",
+      icon: "success",
+      timer : 1000,
+    })
+  }
+  }
+});
+  
+}
 </script>
 
 <template>
@@ -55,7 +90,7 @@ onBeforeMount(async () => {
                 </svg>
                 {{ new Date(task.created_at).toLocaleDateString() }}
 
-                <a class="icon-nav text-primary mx-1">
+                <a @click="goToEdit(task.id)" class="icon-nav text-primary mx-1">
                   <svg
                     stroke="currentColor"
                     fill="currentColor"
@@ -71,7 +106,7 @@ onBeforeMount(async () => {
                   </svg>
                 </a>
 
-                <a class="icon-nav text-danger mx-1">
+                <a @click="deleteTask(task.id)" class="icon-nav text-danger mx-1">
                   <svg
                     stroke="currentColor"
                     fill="currentColor"

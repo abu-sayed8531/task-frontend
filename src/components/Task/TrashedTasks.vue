@@ -1,21 +1,74 @@
 <script setup>
-import { onBeforeMount } from "vue";
+import { onBeforeMount , computed } from "vue";
 import ShimmerLoader from "../ShimmerLoader.vue";
 import { useTaskStore } from "../../stores/taskStore";
+import Swal from "sweetalert2";
+import { storeToRefs } from "pinia";
+
+
 
 const taskStore = useTaskStore();
-
-onBeforeMount(() => {
-  taskStore.fetchTrashedTasks();
+//const {tasks} = storeToRefs(taskStore);
+const tasks = computed(()=> taskStore.tasks);
+onBeforeMount( () => {
+    taskStore.getTrashedTasks();
+ 
 });
 
 const forceDeleteTask = async (id) => {
-  await taskStore.forceDeleteTask(id);
+  Swal.fire({
+  title: "Are you sure?",
+  text: "You won't be able to revert this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, delete it!",  
+  
+}).then((result) => {
+  if (result.isConfirmed) {
+  const deleted =   taskStore.forceDeleteTask(id);
+  if(deleted){
+   
+    Swal.fire({
+      title: "Deleted!",
+      text: "Your task has been deleted permanently.",
+      icon: "success",
+      timer : 1000,
+    })
+  }
+  }
+});
+  
 };
 
 const restoreTask = async (id) => {
-  await taskStore.restoreTask(id);
+  Swal.fire({
+  title: "Are you sure?",
+  text: "Do you want to restore this task!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, restore it!",  
+  
+}).then((result) => {
+  if (result.isConfirmed) {
+  const deleted =    taskStore.restoreTask(id);
+  if(deleted){
+   
+    Swal.fire({
+      title: "Restored!",
+      text: "Your task has been restored.",
+      icon: "success",
+      timer : 1000,
+    })
+  }
+  }
+});
+  
 };
+
 </script>
 
 <template>
@@ -25,7 +78,7 @@ const restoreTask = async (id) => {
     <ShimmerLoader :loading="taskStore.loading" :count="8" :lines="1">
       <div class="row">
         <div
-          v-for="task in taskStore.tasks"
+          v-for="task in tasks"
           :key="task.id"
           class="col-12 col-md-6 col-lg-4 p-2"
         >

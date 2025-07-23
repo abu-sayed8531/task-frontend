@@ -69,7 +69,7 @@ async function updateTask(){
     description.value = '';
     status.value = '';
     if(update){
-        router.push({name:'dashboard'});
+        router.push({name:'summary'});
     } 
 }
 
@@ -104,7 +104,7 @@ async function updateTask(){
               <option value="new">New</option>
               <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
-              <option value="canceled">Canceled</option>
+              <option value="cancel">Canceled</option>
             </select>
 
             <br />

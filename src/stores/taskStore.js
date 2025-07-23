@@ -7,6 +7,7 @@ import cogoToast from 'cogo-toast';
 
 export const useTaskStore = defineStore('task',()=>{
     const tasks = ref([]);
+    const summary = ref({});
     const loading = ref(false);
     const createTask = async (credentials)=>{
         tasks.value = [];
@@ -195,5 +196,115 @@ export const useTaskStore = defineStore('task',()=>{
                          return false;
         }
     }
-    return {createTask,filterByStatus, updateTask, getTaskById, deleteTask, loading, tasks}
+    const getTrashedTasks = async()=>{
+        try{
+             tasks.value = [];
+             const res = await  apiClient.get('/tasks/trashed');
+             tasks.value = res.data.data.data;
+             
+             return true;
+        }
+        catch(error){
+             if(error.response?.data.message){
+                            cogoToast.error(error.response.data.message,{
+                                position : 'bottom-center',
+                            })
+                         }
+                         else if(error.code === 'ERR_NETWORK'){
+                                cogoToast.error('Network error',{
+                                position : 'bottom-center',
+                            })
+                         }
+                         else{
+                            cogoToast.error('There is something wrong',{
+                                position : 'bottom-center',
+                            }
+                            
+                            )
+                         }
+        }
+    }
+    const forceDeleteTask= async(id)=>{
+             try{
+                  const res = await apiClient.delete(`tasks/${id}/force-delete`);
+                  tasks.value =  tasks.value.filter((t)=>{return t.id !== id});
+                  return true;
+
+             }
+             catch(error){
+                if(error.response?.data.message){
+                            cogoToast.error(error.response.data.message,{
+                                position : 'bottom-center',
+                            })
+                         }
+                         else if(error.code === 'ERR_NETWORK'){
+                                cogoToast.error('Network error',{
+                                position : 'bottom-center',
+                            })
+                         }
+                         else{
+                            cogoToast.error('There is something wrong',{
+                                position : 'bottom-center',
+                            }
+                            
+                            )
+                         }
+             }
+    }
+    const restoreTask = async (id) => {
+        try{
+             const res = await apiClient.post(`/tasks/${id}/restore`);
+             tasks.value = tasks.value.filter((t)=>{ return t.id !==id});
+             return true;
+        }
+        catch(error){
+           if(error.response?.data.message){
+                            cogoToast.error(error.response.data.message,{
+                                position : 'bottom-center',
+                            })
+                         }
+                         else if(error.code === 'ERR_NETWORK'){
+                                cogoToast.error('Network error',{
+                                position : 'bottom-center',
+                            })
+                         }
+                         else{
+                            cogoToast.error('There is something wrong',{
+                                position : 'bottom-center',
+                            }
+                            
+                            )
+                         } 
+        }
+    }
+    const fetchSummary=  async ()=>{
+           try{
+                   const res = await apiClient.get('/tasks/summary');
+                
+                   summary.value = res.data.data;
+                   
+                   return true;
+           }
+           catch(error){
+            if(error.response?.data.message){
+                            cogoToast.error(error.response.data.message,{
+                                position : 'bottom-center',
+                            })
+                         }
+                         else if(error.code === 'ERR_NETWORK'){
+                                cogoToast.error('Network error',{
+                                position : 'bottom-center',
+                            })
+                         }
+                         else{
+                            cogoToast.error('There is something wrong',{
+                                position : 'bottom-center',
+                            }
+                            
+                            )
+                         }
+           }
+    }
+    return {createTask,filterByStatus, updateTask, getTaskById, deleteTask, 
+        forceDeleteTask,getTrashedTasks, restoreTask,fetchSummary, summary, loading, tasks}
 });
